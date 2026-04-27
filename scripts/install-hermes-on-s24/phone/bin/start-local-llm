@@ -1,0 +1,8 @@
+#!/data/data/com.termux/files/usr/bin/bash
+# shellcheck shell=bash
+# start-local-llm — convenience wrapper: foreground Qwen3 launcher.
+# Use Ctrl-C to stop. Run from a Termux session you can leave open.
+
+set -euo pipefail
+echo "Starting Qwen3-4B llama-server on http://127.0.0.1:8080 (Ctrl-C to stop)"
+exec "$HOME/.hermes/bin/llama-server-qwen3.sh"

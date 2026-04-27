@@ -1,0 +1,21 @@
+# s24-cloud — phone Hermes profile for online use.
+# Generated from template by lib/profile-render.sh; double-percent placeholders
+# are substituted from the synced phone .env.
+
+model:
+  provider: openrouter
+  default: %%OPENROUTER_PRIMARY_MODEL%%
+
+fallback_model:
+  provider: openai
+  model: %%OPENAI_FALLBACK_MODEL%%
+
+memory:
+  provider: honcho
+
+stt:
+  provider: groq
+  groq:
+    model: whisper-large-v3
+tts:
+  provider: openai

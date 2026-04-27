@@ -1,0 +1,28 @@
+# secrets
+.env
+.env.local
+*.env.local
+.env.*.local
+
+# install run artifacts
+scripts/install-hermes-on-s24/logs/
+scripts/install-hermes-on-s24/.tailscale-desktop
+scripts/install-hermes-on-s24/.install-state-cache
+**/logs/*.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# node
+node_modules/

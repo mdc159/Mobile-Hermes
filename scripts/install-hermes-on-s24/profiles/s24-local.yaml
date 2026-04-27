@@ -1,0 +1,41 @@
+# s24-local — phone Hermes profile for offline use.
+# Local llama-server is started on demand via ~/.hermes/bin/start-local-llm.
+
+model:
+  provider: custom
+  # Hermes-3-Llama-3.2-3B (launcher on port 8081) chosen over Qwen3-4B for
+  # stability on the 8 GB S24 — smaller working set, fewer OOM events.
+  # Switch to qwen3 by changing default + base_url and starting the qwen3
+  # launcher (~/.hermes/bin/start-local-llm runs qwen3 by default; use
+  # ~/.hermes/bin/llama-server-hermes3.sh for the alt).
+  default: hermes-3-3b-local
+  base_url: http://127.0.0.1:8081/v1
+  api_key: ""
+  # Hermes Agent enforces a 64K minimum context_length. The actual server
+  # is launched with -c 16384 (memory-safe). 65536 here clears the floor.
+  context_length: 65536
+
+# Hermes derives auxiliary models from the primary by default and detects
+# n_ctx from the server. With -c 16384 on llama-server it would otherwise
+# fail the 64K floor for compression / summary / classification too.
+# Override each so Hermes accepts the configuration.
+auxiliary:
+  compression:
+    context_length: 65536
+  summary:
+    context_length: 65536
+  classification:
+    context_length: 65536
+
+memory:
+  memory_enabled: true
+  user_profile_enabled: true
+  memory_char_limit: 1600
+  user_char_limit: 1000
+
+file_read_max_chars: 20000
+
+tool_output:
+  max_bytes: 12000
+  max_lines: 300
+  max_line_length: 1000

@@ -1,0 +1,8 @@
+{
+  "hosts": {
+    "hermes": {
+      "recallMode": "tools",
+      "writeFrequency": "async"
+    }
+  }
+}

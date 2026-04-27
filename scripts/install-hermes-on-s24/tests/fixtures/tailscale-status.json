@@ -1,0 +1,18 @@
+{
+  "Self": {
+    "HostName": "hammer-desktop",
+    "TailscaleIPs": ["100.64.10.42", "fd7a:115c:a1e0::1"]
+  },
+  "Peer": {
+    "n123": {
+      "HostName": "miguels-s24",
+      "DNSName": "miguels-s24.tailfedd3b.ts.net.",
+      "TailscaleIPs": ["100.83.211.53", "fd7a:115c:a1e0::ff"]
+    },
+    "n456": {
+      "HostName": "Miguel's S24 v2",
+      "DNSName": "miguels-s24-v2.tailfedd3b.ts.net.",
+      "TailscaleIPs": ["100.83.211.99", "fd7a:115c:a1e0::aa"]
+    }
+  }
+}
