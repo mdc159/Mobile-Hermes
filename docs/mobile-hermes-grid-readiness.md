@@ -1,0 +1,134 @@
+# Mobile Hermes Grid Readiness
+
+This note translates the Samsung S24 / Termux Hermes install into the Studio54
+remote-persona grid language.
+
+The phone is not a tiny VPS. Treat it as a **mobile-edge candidate** with tighter
+battery, network, Android process-lifecycle, and local-LLM constraints.
+
+## Current role
+
+```text
+Persona / tab: Android or Termux, final name still pending
+Device class: Samsung phone / Termux / mobile edge
+Runtime: Hermes Agent in Termux
+Primary mode: cloud Hermes profile, backed by desktop Honcho over Tailscale
+Local mode: on-demand llama.cpp server only, not resident
+Grid state: candidate only; keep disabled until discovery/probe passes from Donna
+```
+
+## Known working pieces from this repo
+
+- Termux-based Hermes install scripts exist under `scripts/install-hermes-on-s24/`.
+- `s24-cloud` is the daily-driver profile.
+- `s24-local` exists for offline/local testing, but the local model server is
+  constrained and should be started manually.
+- Termux:Boot starts `sshd` and keeps the phone awake; it deliberately does not
+  auto-start local llama-server.
+- Termux:Widget shortcuts expose common Hermes launch paths for human use.
+- The phone-specific Honcho workspace is separate from desktop/VPS personas.
+
+## Known weak points
+
+- Desktop-side Honcho exposure currently depends on a manual `socat` forwarder.
+  If the desktop reboots, phone memory can appear broken until the forwarder is
+  restored.
+- Tailscale reconnect after phone reboot is not guaranteed unless Android battery
+  settings keep Tailscale, Termux, and Termux:Boot unrestricted.
+- Long SSH calls need keepalive options; silent links can drop through Android,
+  Tailscale, or carrier/Wi-Fi behavior.
+- Local LLM mode is on-demand only. Do not treat the phone as a permanently
+  resident inference server.
+- The repo contains operational examples. Keep Tailnet IPs, hostnames, usernames,
+  tokens, `.env` content, and raw runtime logs out of future PRs and ledger
+  comments.
+
+## Studio54 onboarding contract
+
+Before enabling the phone in Studio54 topology, collect a redacted discovery
+report with these fields:
+
+```yaml
+candidate: Android | Termux
+transport:
+  ssh_alias_configured: true | false
+  tailscale_reachable: true | false
+  ssh_port: redacted-or-default
+  host_details_redacted: true
+runtime:
+  termux_present: true | false
+  hermes_present: true | false
+  cloud_profile: s24-cloud
+  local_profile: s24-local
+  tmux_present: true | false
+  attach_wrapper_present: true | false
+persistence:
+  termux_boot_present: true | false
+  sshd_on_boot: true | false
+  gateway_autostart: true | false
+  local_llm_autostart: false
+mobile_constraints:
+  battery_unrestricted: true | false | unknown
+  tailscale_reconnect_after_reboot: true | false | unknown
+  wake_lock_policy: documented | missing
+  local_llm_residency: on-demand-only
+safety:
+  secrets_printed: false
+  raw_runtime_logs_preserved: false
+  installs_performed: false
+  services_changed: false
+next_action: string
+```
+
+## Minimum probe ladder
+
+1. **Discovery only**
+   - Confirm intended final tab name: `Android`, `Termux`, or both.
+   - Confirm SSH alias and transport without printing hostnames/IPs/key paths.
+   - Confirm whether `tmux` and an attach wrapper exist on the phone.
+
+2. **Topology stub**
+   - Keep the Studio54 entry disabled.
+   - Mark kind as `pending-mobile-edge`.
+   - Store only redacted/generic notes in Studio54.
+
+3. **Phone-side wrapper**
+   - Prefer a stable host-side wrapper, e.g. `mobile-hermes-attach`, that attaches
+     to an existing Termux/tmux/Hermes session.
+   - The wrapper should not create sessions, install packages, start local LLMs,
+     or mutate secrets unless explicitly invoked for that purpose.
+
+4. **Dry-run attach**
+   - `./bin/hermes-grid attach <tab> --dry-run` must show the intended command.
+   - Disabled tabs must refuse before executing anything.
+
+5. **Bounded live smoke**
+   - Use an explicit timeout.
+   - Do not preserve raw pane/session output.
+   - Record only pass/fail, command family, and safety boundaries.
+
+## Suggested first PRs
+
+1. **Mobile-Hermes PR: documentation hygiene and grid readiness**
+   - Redact Tailnet IP examples.
+   - Add this readiness contract.
+   - Keep functional defaults unchanged until the active phone path is confirmed.
+
+2. **Studio54 PR: disabled mobile-edge topology refinement**
+   - Link to this repo/doc from the Android/Termux candidate notes.
+   - Keep `enabled: false`.
+
+3. **Mobile-Hermes PR: attach wrapper and verification script**
+   - Add a read-only `verify-grid-readiness.sh` script.
+   - Add a phone-side attach wrapper template.
+   - Add tests for redaction and no-runtime-mutation behavior.
+
+## Do not do yet
+
+- Do not enable the phone tab in Studio54.
+- Do not auto-start the local LLM.
+- Do not install or pair Moshi/Mosh hooks.
+- Do not expose Tailnet IPs, SSH key paths, `.env`, API keys, raw Hermes session
+  databases, memory stores, or raw tmux panes.
+- Do not assume desktop Honcho reachability proves phone-side memory is durable;
+  verify the forwarder and phone profile explicitly.

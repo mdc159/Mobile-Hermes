@@ -1,7 +1,7 @@
 # Hermes-on-S24 install scripts
 
-Desktop-driven install of Hermes Agent on a Samsung S24 (`miguels-s24` /
-`100.83.211.53`) over Tailscale.
+Desktop-driven install of Hermes Agent on a Samsung S24 (`miguels-s24`) over
+Tailscale.
 
 Spec: [`docs/superpowers/specs/2026-04-26-hermes-on-s24-design.md`](../../docs/superpowers/specs/2026-04-26-hermes-on-s24-design.md)
 
@@ -93,8 +93,9 @@ After the install completes:
 - **`pip install` runs out of RAM**: keep phone plugged in and screen on; the
   Rust build of `jiter` is the heavy step. If Termux gets killed, re-run with
   `--resume`.
-- **Tailscale magic DNS doesn't resolve from phone**: edit phone `~/.hermes/.env`,
-  replace `HONCHO_BASE_URL=http://<name>:18000` with `http://100.x.y.z:18000`.
+- **Tailscale MagicDNS doesn't resolve from phone**: edit phone `~/.hermes/.env`,
+  replace `HONCHO_BASE_URL=http://<desktop-name>:18000` with the desktop's
+  current Tailnet interface address on port `18000`.
 - **G6 fails (Honcho not active)**: re-check the bind/auth/ACL. Re-run
   `lib/honcho-bind.sh print_recommendation` for the latest checklist.
 - **G8 fails (no chat_template)**: llama-server was launched without `--jinja`.
