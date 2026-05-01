@@ -1,7 +1,7 @@
 # hermaper — Hermes on the S24
 
 This monorepo's reason for existing right now is **running Hermes Agent on a
-Samsung Galaxy S24** (`miguels-s24`, Tailscale `100.83.211.53`), backed by the
+Samsung Galaxy S24** (`miguels-s24`, reachable over Tailscale), backed by the
 desktop's local Honcho memory layer.
 
 The other top-level dirs (`hermes-agent/`, `paperclip/`, `honcho/`) are the
@@ -129,19 +129,21 @@ inline-documented in the YAML.
 ## Honcho exposure (the bit that breaks after every desktop reboot)
 
 Honcho runs on the desktop bound to `127.0.0.1:18000`. The phone reaches it
-over Tailscale via a `socat` forwarder bound to the desktop's tailnet IP:
+over Tailscale via a small desktop-side `socat` forwarder bound to the
+desktop's Tailnet interface:
 
 ```bash
-socat TCP-LISTEN:18000,bind=100.91.93.24,fork,reuseaddr TCP:127.0.0.1:18000 &
+# Replace <desktop-tailnet-ip> with the desktop's Tailscale address.
+socat TCP-LISTEN:18000,bind=<desktop-tailnet-ip>,fork,reuseaddr TCP:127.0.0.1:18000 &
 ```
 
 This is **not persistent across desktop reboot.** If the phone says memory
 isn't working, this is the first thing to check. Permanent fix is to wrap it
 in a systemd user unit; not done yet.
 
-Phone's `~/.hermes/.env` has `HONCHO_BASE_URL=http://100.91.93.24:18000`. If
-Tailscale magic DNS ever resolves from the phone, you can use the desktop name
-instead, but raw tailnet IP is the reliable form.
+Phone's `~/.hermes/.env` has `HONCHO_BASE_URL=http://<desktop-tailnet-ip>:18000`.
+If Tailscale MagicDNS resolves reliably from the phone, you can use the desktop
+name instead, but the Tailnet interface address is the reliable fallback.
 
 `AUTH_USE_AUTH=false` on the local Honcho — no API key required.
 
@@ -239,6 +241,7 @@ confirm gate G9.
 ## Documents
 
 - `scripts/install-hermes-on-s24/README.md` — installer spec and phase-minus-1 prereqs
+- `docs/mobile-hermes-grid-readiness.md` — Studio54/mobile-edge onboarding contract
 - `docs/superpowers/specs/2026-04-26-hermes-on-s24-design.md` — full design
 - `phone-llm.md`, `hermes-on-android.md` — design notes that fed the spec
 - `claude.md` — Claude Code workflow rules + daily log of install progress
