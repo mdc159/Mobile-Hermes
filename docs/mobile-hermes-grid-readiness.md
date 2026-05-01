@@ -80,12 +80,36 @@ safety:
 next_action: string
 ```
 
+## Phase A discovery artifacts
+
+This repo now carries the first non-mutating Phase A artifacts for Donna / Studio54:
+
+- `scripts/install-hermes-on-s24/verify-grid-readiness.sh` emits a redacted YAML
+  readiness report. Default behavior is local-only: no SSH, ADB, install,
+  service, firewall, gateway, Honcho, Moshi/mosh, or local-LLM mutation.
+- `scripts/install-hermes-on-s24/phone/bin/mobile-hermes-attach.template` is an
+  attach-only wrapper template. It attaches to an existing `tmux` session/window
+  and refuses missing sessions instead of creating them.
+
+Run the report safely from a desktop checkout:
+
+```bash
+cd scripts/install-hermes-on-s24
+./verify-grid-readiness.sh --dry-run
+./verify-grid-readiness.sh --sample
+```
+
+Do not enable Android or Termux in Studio54 from this output alone. The report is
+an evidence scaffold for the next explicit transport validation, not live attach
+authorization.
+
 ## Minimum probe ladder
 
 1. **Discovery only**
    - Confirm intended final tab name: `Android`, `Termux`, or both.
    - Confirm SSH alias and transport without printing hostnames/IPs/key paths.
    - Confirm whether `tmux` and an attach wrapper exist on the phone.
+   - Use `verify-grid-readiness.sh` as the redacted report shape.
 
 2. **Topology stub**
    - Keep the Studio54 entry disabled.

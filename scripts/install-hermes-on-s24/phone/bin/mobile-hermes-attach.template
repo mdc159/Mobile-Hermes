@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# mobile-hermes-attach.template — phone-side attach wrapper template for Studio54.
+#
+# Copy to a phone-side PATH location only after explicit approval and validation.
+# This template is attach-only: it refuses missing sessions instead of creating
+# them, and it does not install packages, start model servers, or read secrets.
+
+set -euo pipefail
+
+SESSION="${HERMES_GRID_TMUX_SESSION:-mobile-hermes}"
+WINDOW="${HERMES_GRID_TMUX_WINDOW:-Hermes}"
+TARGET="${SESSION}:${WINDOW}"
+
+if ! command -v tmux >/dev/null 2>&1; then
+  printf 'tmux is not available; install/enable separately before grid attach.\n' >&2
+  exit 127
+fi
+
+if ! tmux has-session -t "$SESSION" 2>/dev/null; then
+  printf 'Hermes tmux session is not present: %s\n' "$SESSION" >&2
+  printf 'Refusing to create sessions from attach wrapper. Start Hermes manually first.\n' >&2
+  exit 1
+fi
+
+if ! tmux list-windows -t "$SESSION" -F '#W' | grep -Fxq "$WINDOW"; then
+  printf 'Hermes tmux window is not present: %s\n' "$TARGET" >&2
+  printf 'Refusing to create windows from attach wrapper. Start Hermes manually first.\n' >&2
+  exit 1
+fi
+
+exec tmux attach-session -t "$TARGET"

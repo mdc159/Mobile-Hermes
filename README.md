@@ -186,6 +186,11 @@ setsid sh -c 'cmd </dev/null >/dev/null 2>&1 &' </dev/null
 ```
 plain `nohup … &` over ssh hangs because ssh holds the remote stdout open.
 
+## Key docs
+
+- `docs/mobile-hermes-grid-readiness.md` — Studio54 mobile-edge readiness
+  contract, Phase A discovery report shape, and attach-wrapper template notes.
+
 ---
 
 ## Running the installer
