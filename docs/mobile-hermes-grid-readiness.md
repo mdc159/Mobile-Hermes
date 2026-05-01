@@ -37,11 +37,45 @@ Grid state: candidate only; keep disabled until discovery/probe passes from Donn
   settings keep Tailscale, Termux, and Termux:Boot unrestricted.
 - Long SSH calls need keepalive options; silent links can drop through Android,
   Tailscale, or carrier/Wi-Fi behavior.
+- Termux `sshd` should be treated as a phone lifecycle dependency, not a normal
+  VPS service. Debug-mode `sshd -ddd` is useful for auth diagnosis but can exit
+  after a single attempt; restart normal daemon mode before declaring the route
+  broken.
 - Local LLM mode is on-demand only. Do not treat the phone as a permanently
   resident inference server.
 - The repo contains operational examples. Keep Tailnet IPs, hostnames, usernames,
-  tokens, `.env` content, and raw runtime logs out of future PRs and ledger
-  comments.
+  tokens, `.env` content, SSH key paths, and raw runtime logs out of future PRs
+  and ledger comments.
+
+## Lessons from the first Donna-to-phone SSH validation
+
+The first live Donna-to-phone route is validated at the bounded readiness layer:
+Donna can SSH to the phone through the local alias and receive `SAM_AUTH_OK` plus
+non-sensitive tool probes. Keep this as a transport milestone, not topology
+enablement.
+
+Operational lessons:
+
+- A public key must appear in `authorized_keys` as one physical line. Mobile paste
+  wrapping can make permissions and sshd config look correct while the expected
+  key is still absent.
+- Verify key acceptance by fingerprinting `authorized_keys`, then confirm from the
+  caller side with a `BatchMode` probe. Do not paste private keys or raw key files
+  into ledgers.
+- Check bootstrap docs/scripts for stale public keys before changing sshd policy.
+  If Donna's private key was rotated but an older phone bootstrap snippet still
+  seeds `authorized_keys`, sshd will correctly reject the new offered key.
+- `permission_denied` after `Offering public key` usually means the route and
+  sshd listener are alive but the key is not accepted by Termux.
+- `connection_refused` after a debug attempt often means debug-mode `sshd` exited;
+  restart normal daemon mode and re-check the listener before changing topology.
+- The phone currently has Python available for bounded probes. Do not assume
+  `tmux`, attach wrappers, boot persistence, or grid-worker readiness until the
+  readiness report proves those fields.
+- Direct repair access is useful because the phone is mobile and flaky. Keep
+  repairs bounded: auth/listener/package checks are acceptable when approved;
+  secrets, raw session stores, local-LLM autostart, and topology enablement remain
+  out of scope without explicit approval.
 
 ## Studio54 onboarding contract
 
