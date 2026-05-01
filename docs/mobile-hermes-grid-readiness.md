@@ -62,6 +62,9 @@ Operational lessons:
 - Verify key acceptance by fingerprinting `authorized_keys`, then confirm from the
   caller side with a `BatchMode` probe. Do not paste private keys or raw key files
   into ledgers.
+- Check bootstrap docs/scripts for stale public keys before changing sshd policy.
+  If Donna's private key was rotated but an older phone bootstrap snippet still
+  seeds `authorized_keys`, sshd will correctly reject the new offered key.
 - `permission_denied` after `Offering public key` usually means the route and
   sshd listener are alive but the key is not accepted by Termux.
 - `connection_refused` after a debug attempt often means debug-mode `sshd` exited;
